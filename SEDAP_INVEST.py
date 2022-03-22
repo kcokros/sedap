@@ -5,17 +5,15 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-import sklearn
-import catboost
 from sklearn.linear_model import HuberRegressor, LinearRegression, PassiveAggressiveRegressor, ElasticNet, Ridge, BayesianRidge
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor,ExtraTreesRegressor
 from sklearn.model_selection import validation_curve, LeaveOneOut, train_test_split, cross_val_score
 from sklearn.model_selection import cross_validate, KFold, cross_val_score, RandomizedSearchCV, GridSearchCV
-from catboost import CatBoostRegressor
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import seaborn as sns
+from sklearn.preprocessing import OneHotEncoder 
 from matplotlib import pyplot
 import pickle
 
@@ -33,10 +31,22 @@ with col3:
 
 # #Baca Dataset awal
 data_train = pd.read_excel('./Rekapitulasi Data (Concise).xlsx')
-loaded_model = pickle.load(open('./model.sav', 'rb'))
+loaded_model = pickle.load(open('./model.pkl', 'rb'))
+# load library 
 
+# inisiasi encoder 
+ohc = OneHotEncoder(handle_unknown='ignore')
 
+# fit dan transform
+new_features = ohc.fit_transform(data_train[['Provinsi']])
 
+# masukan ke dataframe hasilnya
+cols_name= [x for x in data_train['Provinsi'].unique()]
+prov = pd.DataFrame(new_features.toarray(), columns=cols_name)
+
+# gabung hasilnya ke job_clean
+inv1 = pd.concat([data_train,prov], axis=1)
+data_train1 = inv1.drop(['Provinsi','Tahun','UMP-1'],axis=1)
 #Disable Warning
 st.set_option('deprecation.showPyplotGlobalUse', False)
 #Set Size
@@ -65,32 +75,32 @@ if menu_utama == 'Prediksi':
                 for item1 in data_train['Provinsi'].unique():
                     if item1 == input_pilih_provinsi:
                         st.write(input_pilih_provinsi)
-                input_pilih_tahun = st.selectbox('Pilih Provinsi',data_train['Tahun'].unique())
-                for item2 in data_train['Tahun'].unique():
-                    if item2 == input_pilih_tahun:
-                        st.write(input_pilih_tahun)
+                #input_pilih_tahun = st.selectbox('Pilih Provinsi',data_train['Tahun'].unique())
+                #for item2 in data_train['Tahun'].unique():
+                    #if item2 == input_pilih_tahun:
+                        #st.write(input_pilih_tahun)
 
                 st.write('#### Berikut adalah data yang terisi secara otomatis untuk provinsi : ', input_pilih_provinsi)
                 col1, col2 = st.columns(2)
                 with col1:
                     st.markdown("<p style='text-align: center; color: #FFCC29; font-family:arial'>Kondisi Infrastruktur</p>", unsafe_allow_html=True)
                     
-                    input_dum_metro = st.selectbox('Keberadaan kota metropolitan; 0=tidak ada, 1=ada',data_train['DumMetro'].unique())
+                    input_dum_metro = st.number_input('Keberadaan kota metropolitan; 0=tidak ada, 1=ada',min_value=0, max_value=1,value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['DumMetro'].values[0])
                     for item3 in data_train['DumMetro'].unique():
                         if item1 == input_pilih_provinsi and data_train['Tahun'] == 2020:
                             st.write(input_dum_metro)
 
-                    input_dmap = st.selectbox('Keberadaan Bandara Utama; 0 = tidak punya 1 =punya',data_train['Dum Main AP'].unique())
+                    input_dmap = st.number_input('Keberadaan Bandara Utama; 0 = tidak punya 1 =punya',min_value=0, max_value=1,value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['Dum Main AP'].values[0])
                     for item4 in data_train['Provinsi'].unique():
                         if item1 == input_pilih_provinsi and data_train['Tahun'] == 2020:
                             st.write(input_dmap)
 
-                    input_port_q = st.number_input('Kualitas Infrastruktur Pelabuhan', min_value=0.0, max_value=1.0, value=0.316, step=0.01)
+                    input_port_q = st.number_input('Kualitas Infrastruktur Pelabuhan', value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['PortQ'].values[0])
                     for item5 in data_train['PortQ'].unique():
                         if item1 == input_pilih_provinsi and data_train['Tahun'] == 2020:
                             st.write(input_port_q)
 
-                    input_infraix = st.selectbox('Indeks Komposit Infrastruktur; 0=tidak memadai, 1=cukup memadai, 2=sangat memadai',data_train['Infra Index'].unique())
+                    input_infraix = st.number_input('Indeks Komposit Infrastruktur; 0=tidak memadai, 1=cukup memadai, 2=sangat memadai',min_value=0, max_value=2,value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['Infra Index'].values[0])
                     for item6 in data_train['Infra Index'].unique():
                         if item1 == input_pilih_provinsi and data_train['Tahun'] == 2020:
                             st.write(input_infraix)
@@ -103,23 +113,23 @@ if menu_utama == 'Prediksi':
                         if item1 == input_pilih_provinsi and data_train.Tahun == 2020:
                             st.write(input_dist_cp)
 
-                    input_dist_sg = st.number_input('Jarak Ibukota Provinsi ke Singapura (dalam km)', min_value=0, max_value=10000, value=1830, step=1)
-                    for item7 in data_train['Provinsi'].unique():
+                    input_dist_sg = st.number_input('Jarak Ibukota Provinsi ke Singapura (dalam km)', step = 1.0,value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['Dist to SG'].values[0])
+                    for item7 in data_train['Dist to SG'].unique():
                         if item1 == input_pilih_provinsi and data_train.Tahun == 2020:
                             st.write(input_dist_sg)
 
-                    input_dum_oil = st.selectbox('Cadangan Minyak Bumi; 0=sedikit, 1=banyak',data_train['DumOil'].unique())
-                    for item8 in data_train['Provinsi'].unique():
+                    input_dum_oil = st.number_input('Cadangan Minyak Bumi; 0=sedikit, 1=banyak', value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['DumOil'].values[0])
+                    for item8 in data_train['DumOil'].unique():
                         if item1 == input_pilih_provinsi and data_train.Tahun == 2020:
                             st.write(input_dum_oil)
 
-                    input_dum_ng = st.selectbox('Cadangan Gas Alam; 0=sedikit, 1=banyak',data_train['DumNG'].unique())
-                    for item9 in data_train['Provinsi'].unique():
+                    input_dum_ng = st.number_input('Cadangan Gas Alam; 0=sedikit, 1=banyak', min_value=0, max_value=1, value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['DumNG'].values[0])
+                    for item9 in data_train['DumNG'].unique():
                         if item1 == input_pilih_provinsi and data_train.Tahun == 2020:
                             st.write(input_dum_ng)
 
-                    input_dum_coal = st.selectbox('Cadangan Batu Bara; 0=sedikit, 1=banyak',data_train['DumCoal'].unique())
-                    for item10 in data_train['Provinsi'].unique():
+                    input_dum_coal = st.number_input('Cadangan Batu Bara; 0=sedikit, 1=banyak', min_value=0, max_value=1, value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['DumCoal'].values[0])
+                    for item10 in data_train['DumCoal'].unique():
                         if item1 == input_pilih_provinsi and data_train.Tahun == 2020:
                             st.write(input_dum_coal)
 
@@ -128,113 +138,58 @@ if menu_utama == 'Prediksi':
                 col1, col2, col3 = st.columns(3)
                 with col1:
                     st.markdown("<p style='text-align: center; color: #FFCC29; font-family:arial'>Belanja Pemerintah</p>", unsafe_allow_html=True)
-                    input_belanja_51 = st.number_input('Belanja Pegawai', min_value=1000000, max_value=100000000000000, value=19285486099020, step=1000)
-                    input_belanja_52 = st.number_input('Belanja Barang dan Jasa', min_value=1000000, max_value=100000000000000, value=13258660858311, step=1000)
-                    input_belanja_53 = st.number_input('Belanja Modal', min_value=1000000, max_value=100000000000000, value=8492556614925, step=1000)
-                    input_belanja_lain = st.number_input('Belanja Lainnya Selain Transfer Gabungan Pusat & Daerah', min_value=1000000, max_value=100000000000000, value=3428386300303, step=1000)
+                    input_belanja_51 = st.number_input('Belanja Pegawai', value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['51G'].values[0])
+                    finput_belanja_51 = "Rp{:,d}".format(input_belanja_51)
+                    st.write(finput_belanja_51)
+
+                    input_belanja_52 = st.number_input('Belanja Barang dan Jasa', value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['52G'].values[0])
+                    finput_belanja_52 = "Rp{:,d}".format(input_belanja_52)
+                    st.write(finput_belanja_52)
+                    
+                    input_belanja_53 = st.number_input('Belanja Modal', value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['53G'].values[0])
+                    finput_belanja_53 = "Rp{:,d}".format(input_belanja_53)
+                    st.write(finput_belanja_53)
+                    
+                    input_belanja_lain = st.number_input('Belanja Lainnya Selain Transfer Gabungan Pusat & Daerah', value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['OtEG'].values[0])
+                    finput_belanja_lain = "Rp{:,d}".format(input_belanja_lain)
+                    st.write(finput_belanja_lain)
+
                 with col2:
                     st.markdown("<p style='text-align: center; color: #FFCC29; font-family:arial'>Kondisi Perekonomian</p>", unsafe_allow_html=True)
-                    input_umr_1 = st.number_input('Upah Minimum Regional Tahun Sebelumnya', min_value=1000, max_value=100000000000000, value=2916810, step=1000)
-                    input_pdrb_1 = st.number_input('Produk Domestik Regional Bruto Tahun Sebelumnya', min_value=1000, value=164162980000000, step=1000)
-                
+                    
+                    input_umr_1 = st.number_input('UMR Tahun Sebelumnya', value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['UMP-1'].values[0])
+                    finput_umr_1 = "Rp{:,d}".format(input_umr_1)
+                    st.write(finput_umr_1)
+                    
+                    input_pdrb_1 = st.number_input('Produk Domestik Regional Bruto Tahun Sebelumnya', value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['PDRB-1'].values[0])
+                    st.write(input_pdrb_1)
+
                 with col3:
                     st.markdown("<p style='text-align: center; color: #FFCC29; font-family:arial'>Kondisi Demografis</p>", unsafe_allow_html=True)
-                    input_j_pen = st.number_input('Jumlah Penduduk', min_value=1000, max_value=100000000, value=5388100, step=100)
-                    input_k_pen = st.number_input('Kepadatan Penduduk per Kilometer Persegi', min_value=1, max_value=100000000, value=97, step=1)
-                    input_usia_harapan_hidup = st.number_input('Usia Harapan Hidup', min_value=20, max_value=120, value=60, step=1)
-                    input_cri_cp = st.number_input('Persentase Penyelesaian Tindak Pidana*', min_value=0.0, max_value=10000.0, value=37.9, step=0.1)
-                    input_cri_ri = st.number_input('Risiko Penduduk Terkena Tindak Pidana (Per 100.000 Penduduk)', min_value=1, max_value=1000000, value=149, step=1)
+                    input_j_pen = st.number_input('Jumlah Penduduk', value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['J_Penduduk'].values[0])
+                    st.write(input_j_pen)
 
+                    input_k_pen = st.number_input('Kepadatan Penduduk per Kilometer Persegi', value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['K_Penduduk'].values[0])
+                    st.write(input_k_pen)
+
+                    input_usia_harapan_hidup = st.number_input('Usia Harapan Hidup', value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['UHH'].values[0])
+                    st.write(input_usia_harapan_hidup)
+
+                    input_cri_cp = st.number_input('Persentase Penyelesaian Tindak Pidana', value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['Crime  CP'].values[0])
+                    st.write(input_cri_cp)
+
+                    input_cri_ri = st.number_input('Risiko Penduduk Terkena Tindak Pidana (Per 100.000 Penduduk)', value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['Crime Risk'].values[0])
+                    st.write(input_cri_ri)
 
 
 
                 if st.button('Prediksi Jumlah Investasi Agregat'):
-                    #Split Kolom provinsi
-                    # inisiasi encoder 
-                    ohc = OneHotEncoder(handle_unknown='ignore')
-                    # fit dan transform
-                    new_features = ohc.fit_transform(data_train[['provinsi']])
-                    # masukan ke dataframe hasilnya
-                    cols_name= [x for x in data_train['provinsi'].unique()]
-                    loc = pd.DataFrame(new_features.toarray(), columns=cols_name)
-                    # gabung hasilnya ke invest_clean
-                    invest_clean = pd.concat([data_train,loc], axis=1)
-
-                    ##Split Kolom Tahun
-                    # inisiasi encoder 
-                    #ohc = OneHotEncoder(handle_unknown='ignore')
-                    ## fit dan transform
-                    #new_features = ohc.fit_transform(data_train[['provinsi']])
-                    ## masukan ke dataframe hasilnya
-                    #cols_name= [x for x in data_train['provinsi'].unique()]
-                    #loc = pd.DataFrame(new_features.toarray(), columns=cols_name)
-                    ## gabung hasilnya ke invest_clean
-                    #invest_clean = pd.concat([data_train,loc], axis=1)
-
-                    #Split Kolom DumMetro
-                    # masukan ke dataframe hasilnya
-                    cols_name= [x for x in invest_clean['DumMetro'].unique()]
-                    dmetro = pd.DataFrame(new_features.toarray(), columns=cols_name)
-                    # gabung hasilnya ke invest_clean
-                    invest_clean = pd.concat([invest_clean,dmetro], axis=1)
-
-                    #Split Kolom 51G
-                    # masukan ke dataframe hasilnya
-                    cols_name= [x for x in invest_clean['51G'].unique()]
-                    belanja_51 = pd.DataFrame(new_features.toarray(), columns=cols_name)
-                    # gabung hasilnya ke invest_clean
-                    invest_clean = pd.concat([invest_clean,belanja_51], axis=1)
-
-                    #Split Kolom category
-                    # fit dan transform
-                    new_features = ohc.fit_transform(invest_clean[['category']])
-                    # masukan ke dataframe hasilnya
-                    cols_name= [x for x in invest_clean['category'].unique()]
-                    cat = pd.DataFrame(new_features.toarray(), columns=cols_name)
-                    # gabung hasilnya ke invest_clean
-                    invest_clean = pd.concat([invest_clean,cat], axis=1)
-
-                    #Split Kolom company_industry
-                    # fit dan transform
-                    new_features = ohc.fit_transform(invest_clean[['company_industry']])
-                    # masukan ke dataframe hasilnya
-                    cols_name= [x for x in invest_clean['company_industry'].unique()]
-                    company_industry = pd.DataFrame(new_features.toarray(), columns=cols_name)
-                    # gabung hasilnya ke invest_clean
-                    invest_clean = pd.concat([invest_clean,company_industry], axis=1)
-                    
-                    #Split Kolom company_size
-                    # fit dan transform
-                    new_features = ohc.fit_transform(invest_clean[['company_size']])
-                    # masukan ke dataframe hasilnya
-                    cols_name= [x for x in invest_clean['company_size'].unique()]
-                    company_size = pd.DataFrame(new_features.toarray(), columns=cols_name)
-                    # gabung hasilnya ke invest_clean
-                    invest_clean = pd.concat([invest_clean,company_size], axis=1)
-                    #Split Kolom pend_min
-                    # fit dan transform
-                    new_features = ohc.fit_transform(invest_clean[['pend_min']])
-                    # masukan ke dataframe hasilnya
-                    cols_name= [x for x in invest_clean['pend_min'].unique()]
-                    pend_min = pd.DataFrame(new_features.toarray(), columns=cols_name)
-                    # gabung hasilnya ke invest_clean
-                    invest_clean = pd.concat([invest_clean,pend_min], axis=1)
-                    #Split Kolom Tahun
-                    # fit dan transform
-                        ##new_features = ohc.fit_transform(invest_clean[['Tahun']])
-                    # masukan ke dataframe hasilnya
-                        ##cols_name= [x for x in invest_clean['Tahun'].unique()]
-                        ##Tahun = pd.DataFrame(new_features.toarray(), columns=cols_name)
-                    # gabung hasilnya ke invest_clean
-                    invest_clean = pd.concat([invest_clean,Tahun], axis=1)
-                    invest_clean_ok = invest_clean.drop(['Provinsi','Tahun','category','company_industry','company_size','pend_min','Tahun'],axis=1)
                     #define X & y
-                    X = invest_clean_ok.drop(['salary_ave'], axis=1)
-                    y = invest_clean_ok['salary_ave']
+                    X = data_train1.drop(['PriInv'], axis=1)
+                    y = data_train1['PriInv']
                     index=[0]
                     df_1_pred = pd.DataFrame({
                         'provinsi' : input_pilih_provinsi,
-                        'Tahun' : input_pilih_tahun,
                         'DumMetro' : input_dum_metro,
                         'Dum Main AP' : input_dmap,
                         'PortQ' : input_port_q,
@@ -268,16 +223,31 @@ if menu_utama == 'Prediksi':
                     for i in df_kosong_1.columns:
                         for j in list_1:
                             if i == j:
-                                df_kosong_1[i] = df_kosong_1[i].replace(df_kosong_1[i].values,1)
-                # model_PIet = ExtraTreesRegressor(bootstrap=False, ccp_alpha=0.0, criterion='mse',
-                #     max_depth=27, max_features='auto', max_leaf_nodes=None,
-                #     max_samples=None, min_impurity_decrease=0.0,
-                #     min_impurity_split=None, min_samples_leaf=1,
-                #     min_samples_split=2, min_weight_fraction_leaf=0.0,
-                #     n_estimators=25, n_jobs=-1, oob_score=False,
-                #     random_state=7744, verbose=0, warm_start=False)
-                # model_PIet.fit(X,y)
-                pred_1 = loaded_model.predict(df_kosong_1)
+                                df_kosong_1[i] = df_kosong_1[i].replace(df_kosong_1[i].values,1)  
+                    df_kosong_1['Crime  CP'] = df_1_pred['Crime CP']   
+                    df_kosong_1['DumMetro'] = df_1_pred['DumMetro']
+                    df_kosong_1['Dum Main AP'] = df_1_pred['Dum Main AP']
+                    df_kosong_1['PortQ'] = df_1_pred['PortQ']
+                    df_kosong_1['Infra Index'] = df_1_pred['Infra Index']
+                    df_kosong_1['Dist to Cap' ] = df_1_pred['Dist to Cap' ]
+                    df_kosong_1['Dist to SG'] = df_1_pred['Dist to SG']
+                    df_kosong_1['DumOil'] = df_1_pred['DumOil']
+                    df_kosong_1['DumNG'] = df_1_pred['DumNG']
+                    df_kosong_1['DumCoal' ] = df_1_pred['DumCoal' ]
+                    df_kosong_1['51G'] = df_1_pred['51G']
+                    df_kosong_1['52G']  = df_1_pred['52G' ]
+                    df_kosong_1['53G'] = df_1_pred['53G']
+                    df_kosong_1['OtEG' ] = df_1_pred['OtEG' ]
+                    df_kosong_1['PDRB-1'] = df_1_pred['PDRB-1']
+                    df_kosong_1['J_Penduduk'] = df_1_pred['J_Penduduk']
+                    df_kosong_1['K_Penduduk'] = df_1_pred['K_Penduduk']
+                    df_kosong_1['UHH' ] = df_1_pred['UHH' ]
+                    df_kosong_1['Crime Risk'] = df_1_pred['Crime Risk']
+                    pred_1 = loaded_model.predict(df_kosong_1)
+                    investasli = data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['PriInv'].values[0]
+                    pred_selisih = pred_1 - investasli
                 #investasi = 
-                st.write('Prediksi investasi berdasar data diatas adalah : ', pred_1)
+
+                    st.write('Prediksi investasi berdasar data diatas adalah : ')
+                    st.write("## Rp"f'{pred_selisih[0]:,}')
 
