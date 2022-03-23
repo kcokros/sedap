@@ -200,7 +200,7 @@ if menu_utama == 'Prediksi':
                         'provinsi' : input_pilih_provinsi,
                         'DumMetro' : input_dum_metro,
                         'Dum Main AP' : input_dmap,
-                        'Port_Q' : input_port_q,
+                        'PortQ' : input_port_q,
                         'Infra Index' : input_infraix,
                         'Dist to Cap' : input_dist_cp,
                         'Dist to SG' : input_dist_sg,
@@ -235,7 +235,7 @@ if menu_utama == 'Prediksi':
                     df_kosong_1['Crime  CP'] = df_1_pred['Crime CP']   
                     df_kosong_1['DumMetro'] = df_1_pred['DumMetro']
                     df_kosong_1['Dum Main AP'] = df_1_pred['Dum Main AP']
-                    df_kosong_1['Port_Q'] = df_1_pred['PortQ']
+                    df_kosong_1['PortQ'] = df_1_pred['PortQ']
                     df_kosong_1['Infra Index'] = df_1_pred['Infra Index']
                     df_kosong_1['Dist to Cap' ] = df_1_pred['Dist to Cap' ]
                     df_kosong_1['Dist to SG'] = df_1_pred['Dist to SG']
@@ -263,5 +263,9 @@ if menu_utama == 'Prediksi':
 
                     st.write('Selisih Prediksi investasi berdasar data diatas adalah : ')
                     st.write("## Rp"f'{pred_selisih[0]:,}')
+
+                    
+
+
 
                   
