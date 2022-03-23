@@ -78,7 +78,7 @@ if menu_utama == 'Prediksi':
                 input_pilih_provinsi = st.selectbox('Pilih Provinsi',data_train['Provinsi'].unique())
                 for item1 in data_train['Provinsi'].unique():
                     if item1 == input_pilih_provinsi:
-                        st.write(input_pilih_provinsi)
+                        st.write(' ')
                 #input_pilih_tahun = st.selectbox('Pilih Provinsi',data_train['Tahun'].unique())
                 #for item2 in data_train['Tahun'].unique():
                     #if item2 == input_pilih_tahun:
