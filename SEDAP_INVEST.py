@@ -17,6 +17,7 @@ from sklearn.preprocessing import OneHotEncoder
 from matplotlib import pyplot
 import pickle
 import warnings
+import tableauserverclient as TSC
 col1, col2, col3 = st.columns(3)
 
 with col1:
@@ -191,81 +192,85 @@ if menu_utama == 'Prediksi':
                     finput_cri_ri = "{:.2f} per 100.000 penduduk".format(input_cri_ri)
                     st.write(finput_cri_ri)
 
-                if st.button('Prediksi Jumlah Investasi Agregat'):
-                    #define X & y
-                    X = data_train1.drop(['PriInv'], axis=1)
-                    y = data_train1['PriInv']
-                    index=[0]
-                    df_1_pred = pd.DataFrame({
-                        'provinsi' : input_pilih_provinsi,
-                        'DumMetro' : input_dum_metro,
-                        'Dum Main AP' : input_dmap,
-                        'PortQual' : input_port_q,
-                        'Infra Index' : input_infraix,
-                        'Dist to Cap' : input_dist_cp,
-                        'Dist to SG' : input_dist_sg,
-                        'DumOil' : input_dum_oil,
-                        'DumNG' : input_dum_ng,
-                        'DumCoal' : input_dum_coal,
-                        '51G' : input_belanja_51,
-                        '52G' : input_belanja_52,
-                        '53G' : input_belanja_53,
-                        'OtEG' : input_belanja_lain,
-                        'UMP-1' : input_umr_1,
-                        'PDRB-1' : input_pdrb_1,
-                        'J_Penduduk' : input_j_pen,
-                        'K_Penduduk' : input_k_pen,
-                        'UHH' : input_usia_harapan_hidup,
-                        'Crime CP' : input_cri_cp,
-                        'Crime Risk' : input_cri_ri
-                    },index=index)
-                    #Set semua nilai jadi 0
-                    df_kosong_1 = X[:1]
-                    for col in df_kosong_1.columns:
-                        df_kosong_1[col].values[:] = 0
-                    list_1 = []
-                    for i in df_1_pred.columns:
-                        x = df_1_pred[i][0]
-                        list_1.append(x)
-                    #buat dataset baru
-                    for i in df_kosong_1.columns:
-                        for j in list_1:
-                            if i == j:
-                                df_kosong_1[i] = df_kosong_1[i].replace(df_kosong_1[i].values,1)  
-                    df_kosong_1['Crime  CP'] = df_1_pred['Crime CP']   
-                    df_kosong_1['DumMetro'] = df_1_pred['DumMetro']
-                    df_kosong_1['Dum Main AP'] = df_1_pred['Dum Main AP']
-                    df_kosong_1['PortQual'] = df_1_pred['PortQual']
-                    df_kosong_1['Infra Index'] = df_1_pred['Infra Index']
-                    df_kosong_1['Dist to Cap' ] = df_1_pred['Dist to Cap' ]
-                    df_kosong_1['Dist to SG'] = df_1_pred['Dist to SG']
-                    df_kosong_1['DumOil'] = df_1_pred['DumOil']
-                    df_kosong_1['DumNG'] = df_1_pred['DumNG']
-                    df_kosong_1['DumCoal' ] = df_1_pred['DumCoal' ]
-                    df_kosong_1['51G'] = df_1_pred['51G']
-                    df_kosong_1['52G']  = df_1_pred['52G' ]
-                    df_kosong_1['53G'] = df_1_pred['53G']
-                    df_kosong_1['OtEG' ] = df_1_pred['OtEG' ]
-                    df_kosong_1['PDRB-1'] = df_1_pred['PDRB-1']
-                    df_kosong_1['J_Penduduk'] = df_1_pred['J_Penduduk']
-                    df_kosong_1['K_Penduduk'] = df_1_pred['K_Penduduk']
-                    df_kosong_1['UHH' ] = df_1_pred['UHH' ]
-                    df_kosong_1['Crime Risk'] = df_1_pred['Crime Risk']
-                    pred_1 = loaded_model.predict(df_kosong_1)
-                    investasli = data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['PriInv'].values[0]
-                    pred_selisih = pred_1 - investasli
-                #investasi = 
-                    st.write('Prediksi investasi berdasar data diatas adalah : ')
-                    st.write("## Rp"f'{pred_1[0]:,}')
+col4, col5, col6 = st.columns(3)
 
-                    st.write('Investasi riil berdasar data diatas adalah : ')
-                    st.write("## Rp"f'{investasli:,}')
+with col4:
+    st.write(' ')
 
-                    st.write('Selisih Prediksi investasi berdasar data diatas adalah : ')
-                    st.write("## Rp"f'{pred_selisih[0]:,}')
+with col5:
+    if st.button('Prediksi Jumlah Investasi Agregat'):
+        #define X & y
+        X = data_train1.drop(['PriInv'], axis=1)
+        y = data_train1['PriInv']
+        index=[0]
+        df_1_pred = pd.DataFrame({
+            'provinsi' : input_pilih_provinsi,
+            'DumMetro' : input_dum_metro,
+            'Dum Main AP' : input_dmap,
+            'PortQ' : input_port_q,
+            'Infra Index' : input_infraix,
+            'Dist to Cap' : input_dist_cp,
+            'Dist to SG' : input_dist_sg,
+            'DumOil' : input_dum_oil,
+            'DumNG' : input_dum_ng,
+            'DumCoal' : input_dum_coal,
+            '51G' : input_belanja_51,
+            '52G' : input_belanja_52,
+            '53G' : input_belanja_53,
+            'OtEG' : input_belanja_lain,
+            'UMP-1' : input_umr_1,
+            'PDRB-1' : input_pdrb_1,
+            'J_Penduduk' : input_j_pen,
+            'K_Penduduk' : input_k_pen,
+            'UHH' : input_usia_harapan_hidup,
+            'Crime CP' : input_cri_cp,
+            'Crime Risk' : input_cri_ri
+        },index=index)
+        #Set semua nilai jadi 0
+        df_kosong_1 = X[:1]
+        for col in df_kosong_1.columns:
+            df_kosong_1[col].values[:] = 0
+        list_1 = []
+        for i in df_1_pred.columns:
+            x = df_1_pred[i][0]
+            list_1.append(x)
+        #buat dataset baru
+        for i in df_kosong_1.columns:
+            for j in list_1:
+                if i == j:
+                    df_kosong_1[i] = df_kosong_1[i].replace(df_kosong_1[i].values,1)  
+        df_kosong_1['Crime  CP'] = df_1_pred['Crime CP']   
+        df_kosong_1['DumMetro'] = df_1_pred['DumMetro']
+        df_kosong_1['Dum Main AP'] = df_1_pred['Dum Main AP']
+        df_kosong_1['PortQ'] = df_1_pred['PortQ']
+        df_kosong_1['Infra Index'] = df_1_pred['Infra Index']
+        df_kosong_1['Dist to Cap' ] = df_1_pred['Dist to Cap' ]
+        df_kosong_1['Dist to SG'] = df_1_pred['Dist to SG']
+        df_kosong_1['DumOil'] = df_1_pred['DumOil']
+        df_kosong_1['DumNG'] = df_1_pred['DumNG']
+        df_kosong_1['DumCoal' ] = df_1_pred['DumCoal' ]
+        df_kosong_1['51G'] = df_1_pred['51G']
+        df_kosong_1['52G']  = df_1_pred['52G' ]
+        df_kosong_1['53G'] = df_1_pred['53G']
+        df_kosong_1['OtEG' ] = df_1_pred['OtEG' ]
+        df_kosong_1['PDRB-1'] = df_1_pred['PDRB-1']
+        df_kosong_1['J_Penduduk'] = df_1_pred['J_Penduduk']
+        df_kosong_1['K_Penduduk'] = df_1_pred['K_Penduduk']
+        df_kosong_1['UHH' ] = df_1_pred['UHH' ]
+        df_kosong_1['Crime Risk'] = df_1_pred['Crime Risk']
+        pred_1 = loaded_model.predict(df_kosong_1)
+        investasli = data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['PriInv'].values[0]
+        pred_selisih = pred_1 - investasli
+    #investasi = 
+        st.write('Prediksi investasi berdasar data diatas adalah : ')
+        st.write("## Rp"f'{pred_1[0]:,}')
 
-                    
+        st.write('Investasi riil berdasar data diatas adalah : ')
+        st.write("## Rp"f'{investasli:,}')
 
+        st.write('Selisih Prediksi investasi berdasar data diatas adalah : ')
+        st.write("## Rp"f'{pred_selisih[0]:,}')
 
+with col6:
+    st.write(' ')                    
 
-                  
