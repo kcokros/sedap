@@ -30,8 +30,8 @@ with col3:
 
 
 # #Baca Dataset awal
-data_train = pd.read_excel('sedap/Rekapitulasi Data (Concise).xlsx')
-loaded_model = pickle.load(open('sedap/model.pkl', 'rb'))
+data_train = pd.read_excel('Rekapitulasi Data (Concise).xlsx')
+loaded_model = pickle.load(open('model.pkl', 'rb'))
 # load library 
 
 # inisiasi encoder 
