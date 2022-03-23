@@ -99,8 +99,8 @@ if menu_utama == 'Prediksi':
                         if item1 == input_pilih_provinsi and data_train['Tahun'] == 2020:
                             st.write(input_dmap)
 
-                    input_port_q = st.number_input('Kualitas Infrastruktur Pelabuhan', key=3, min_value=0.0, max_value=100.0, value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['PortQ'].values[0])
-                    for item5 in data_train['PortQ'].unique():
+                    input_port_q = st.number_input('Kualitas Infrastruktur Pelabuhan', key=3, min_value=0.0, max_value=100.0, value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['PortQual'].values[0])
+                    for item5 in data_train['PortQual'].unique():
                         if item1 == input_pilih_provinsi and data_train['Tahun'] == 2020:
                             st.write(input_port_q)
 
@@ -200,7 +200,7 @@ if menu_utama == 'Prediksi':
                         'provinsi' : input_pilih_provinsi,
                         'DumMetro' : input_dum_metro,
                         'Dum Main AP' : input_dmap,
-                        'PortQ' : input_port_q,
+                        'PortQual' : input_port_q,
                         'Infra Index' : input_infraix,
                         'Dist to Cap' : input_dist_cp,
                         'Dist to SG' : input_dist_sg,
