@@ -235,7 +235,7 @@ if menu_utama == 'Prediksi':
                     df_kosong_1['Crime  CP'] = df_1_pred['Crime CP']   
                     df_kosong_1['DumMetro'] = df_1_pred['DumMetro']
                     df_kosong_1['Dum Main AP'] = df_1_pred['Dum Main AP']
-                    df_kosong_1['PortQ'] = df_1_pred['Port_Q']
+                    df_kosong_1['Port_Q'] = df_1_pred['PortQ']
                     df_kosong_1['Infra Index'] = df_1_pred['Infra Index']
                     df_kosong_1['Dist to Cap' ] = df_1_pred['Dist to Cap' ]
                     df_kosong_1['Dist to SG'] = df_1_pred['Dist to SG']
