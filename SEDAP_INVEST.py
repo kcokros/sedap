@@ -123,7 +123,7 @@ if menu_utama == 'Prediksi':
                         if item1 == input_pilih_provinsi and data_train.Tahun == 2020:
                             st.write(input_dist_sg)
 
-                    input_dum_oil = st.number_input('Cadangan Minyak Bumi; 0=sedikit, 1=banyak', value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['DumOil'].values[0])
+                    input_dum_oil = st.number_input('Cadangan Minyak Bumi; 0=sedikit, 1=banyak', min_value=0, max_value=1, value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['DumOil'].values[0])
                     for item8 in data_train['DumOil'].unique():
                         if item1 == input_pilih_provinsi and data_train.Tahun == 2020:
                             st.write(input_dum_oil)
