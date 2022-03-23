@@ -89,22 +89,22 @@ if menu_utama == 'Prediksi':
                 with col1:
                     st.markdown("<p style='text-align: center; color: #FFCC29; font-family:arial'>Kondisi Infrastruktur</p>", unsafe_allow_html=True)
                     
-                    input_dum_metro = st.number_input('Keberadaan kota metropolitan; 0=tidak ada, 1=ada',min_value=0, max_value=1,value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['DumMetro'].values[0])
+                    input_dum_metro = st.number_input('Keberadaan kota metropolitan; 0=tidak ada, 1=ada',key=1,min_value=0, max_value=1,value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['DumMetro'].values[0])
                     for item3 in data_train['DumMetro'].unique():
                         if item1 == input_pilih_provinsi and data_train['Tahun'] == 2020:
                             st.write(input_dum_metro)
 
-                    input_dmap = st.number_input('Keberadaan Bandara Utama; 0 = tidak punya 1 =punya',min_value=0, max_value=1,value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['Dum Main AP'].values[0])
+                    input_dmap = st.number_input('Keberadaan Bandara Utama; 0 = tidak punya 1 =punya',key=2,min_value=0, max_value=1,value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['Dum Main AP'].values[0])
                     for item4 in data_train['Provinsi'].unique():
                         if item1 == input_pilih_provinsi and data_train['Tahun'] == 2020:
                             st.write(input_dmap)
 
-                    input_port_q = st.number_input('Kualitas Infrastruktur Pelabuhan', key=1, value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['PortQ'].values[0])
+                    input_port_q = st.number_input('Kualitas Infrastruktur Pelabuhan', key=3, value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['PortQ'].values[0])
                     for item5 in data_train['PortQ'].unique():
                         if item1 == input_pilih_provinsi and data_train['Tahun'] == 2020:
                             st.write(input_port_q)
 
-                    input_infraix = st.number_input('Indeks Komposit Infrastruktur; 0=tak memadai, 1=cukup memadai, 2=sangat memadai',min_value=0, max_value=2,value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['Infra Index'].values[0])
+                    input_infraix = st.number_input('Indeks Komposit Infrastruktur; 0=tak memadai, 1=cukup memadai, 2=sangat memadai',key=4,min_value=0, max_value=2,value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['Infra Index'].values[0])
                     for item6 in data_train['Infra Index'].unique():
                         if item1 == input_pilih_provinsi and data_train['Tahun'] == 2020:
                             st.write(input_infraix)
