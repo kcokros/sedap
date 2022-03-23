@@ -34,6 +34,11 @@ data_train = pd.read_excel('Rekapitulasi Data (Concise).xlsx')
 loaded_model = pickle.load(open('model.pkl', 'rb'))
 # load library 
 
+#declare data data float sebagai integer
+data_train['PDRB-1'] = data_train['PDRB-1'].astype('int64')
+data_train['J_Penduduk'] = data_train['J_Penduduk'].astype('int64')
+data_train['PriInv'] = data_train['PriInv'].astype('int64')
+
 # inisiasi encoder 
 ohc = OneHotEncoder(handle_unknown='ignore')
 
@@ -49,7 +54,6 @@ inv1 = pd.concat([data_train,prov], axis=1)
 data_train1 = inv1.drop(['Provinsi','Tahun','UMP-1'],axis=1)
 #Disable Warning
 st.set_option('deprecation.showPyplotGlobalUse', False)
-warnings.filterwarnings( action='ignore')
 #Set Size
 sns.set(rc={'figure.figsize':(8,8)})
 #Coloring
@@ -58,7 +62,6 @@ colors_2 = ['#66b3ff','#99ff99']
 colors_3 = ['#79ff4d','#4d94ff']
 colors_4 = ['#ff0000','#ff1aff']
 
-#st.markdown("<h1 style='text-align: center; color: #243A74; font-family:sans-serif'>Job Market Analysis for Post Covid-19 Economic Recovery</h1>", unsafe_allow_html=True)
 
 st.sidebar.image: st.sidebar.image("https://i.postimg.cc/wTGfmC92/sedaplogo.png", use_column_width=True)
 menu_utama = st.sidebar.radio('Pilih Menu : ', ('Analisis', 'Prediksi'))
@@ -81,7 +84,7 @@ if menu_utama == 'Prediksi':
                     #if item2 == input_pilih_tahun:
                         #st.write(input_pilih_tahun)
 
-                st.write('#### Berikut adalah data yang terisi secara otomatis untuk provinsi : ', input_pilih_provinsi)
+                st.write('#### Data Statis provinsi : ', input_pilih_provinsi)
                 col1, col2 = st.columns(2)
                 with col1:
                     st.markdown("<p style='text-align: center; color: #FFCC29; font-family:arial'>Kondisi Infrastruktur</p>", unsafe_allow_html=True)
@@ -101,7 +104,7 @@ if menu_utama == 'Prediksi':
                         if item1 == input_pilih_provinsi and data_train['Tahun'] == 2020:
                             st.write(input_port_q)
 
-                    input_infraix = st.number_input('Indeks Komposit Infrastruktur; 0=tidak memadai, 1=cukup memadai, 2=sangat memadai',min_value=0, max_value=2,value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['Infra Index'].values[0])
+                    input_infraix = st.number_input('Indeks Komposit Infrastruktur; 0=tak memadai, 1=cukup memadai, 2=sangat memadai',min_value=0, max_value=2,value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['Infra Index'].values[0])
                     for item6 in data_train['Infra Index'].unique():
                         if item1 == input_pilih_provinsi and data_train['Tahun'] == 2020:
                             st.write(input_infraix)
@@ -134,7 +137,7 @@ if menu_utama == 'Prediksi':
                         if item1 == input_pilih_provinsi and data_train.Tahun == 2020:
                             st.write(input_dum_coal)
 
-                st.markdown("<h4 style='text-align: center; color: #ffffff; font-family:arial'>Lengkapi data berikut: </h4>", unsafe_allow_html=True)
+                st.markdown("<h4 style='text-align: center; color: #ffffff; font-family:arial'>Data Dinamis Provinsi (Data autofill tahun 2020): </h4>", unsafe_allow_html=True)
 
                 col1, col2, col3 = st.columns(3)
                 with col1:
@@ -162,27 +165,31 @@ if menu_utama == 'Prediksi':
                     finput_umr_1 = "Rp{:,d}".format(input_umr_1)
                     st.write(finput_umr_1)
                     
-                    input_pdrb_1 = st.number_input('Produk Domestik Regional Bruto Tahun Sebelumnya', value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['PDRB-1'].values[0])
-                    st.write(input_pdrb_1)
+                    input_pdrb_1 = st.number_input('PDRB Tahun Sebelumnya', value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['PDRB-1'].values[0])
+                    finput_pdrb_1 = "Rp{:,d}".format(input_pdrb_1)
+                    st.write(finput_pdrb_1)
 
                 with col3:
                     st.markdown("<p style='text-align: center; color: #FFCC29; font-family:arial'>Kondisi Demografis</p>", unsafe_allow_html=True)
                     input_j_pen = st.number_input('Jumlah Penduduk', value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['J_Penduduk'].values[0])
-                    st.write(input_j_pen)
+                    finput_j_pen = "{:,d} jiwa".format(input_j_pen)
+                    st.write(finput_j_pen)
 
-                    input_k_pen = st.number_input('Kepadatan Penduduk per Kilometer Persegi', value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['K_Penduduk'].values[0])
-                    st.write(input_k_pen)
+                    input_k_pen = st.number_input('Kepadatan Penduduk per km²', value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['K_Penduduk'].values[0])
+                    finput_k_pen = "{:.2f} jiwa per km²".format(input_k_pen)
+                    st.write(finput_k_pen)
 
                     input_usia_harapan_hidup = st.number_input('Usia Harapan Hidup', value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['UHH'].values[0])
-                    st.write(input_usia_harapan_hidup)
+                    finput_usia_harapan_hidup = "{:.2f} tahun".format(input_usia_harapan_hidup)
+                    st.write(finput_usia_harapan_hidup)
 
-                    input_cri_cp = st.number_input('Persentase Penyelesaian Tindak Pidana', value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['Crime  CP'].values[0])
-                    st.write(input_cri_cp)
+                    input_cri_cp = st.number_input('% Penyelesaian Tindak Pidana', value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['Crime  CP'].values[0])
+                    finput_cri_cp = "{:.2f}% kasus terselesaikan".format(input_cri_cp)
+                    st.write(finput_cri_cp)
 
-                    input_cri_ri = st.number_input('Risiko Penduduk Terkena Tindak Pidana (Per 100.000 Penduduk)', value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['Crime Risk'].values[0])
-                    st.write(input_cri_ri)
-
-
+                    input_cri_ri = st.number_input('Risiko Penduduk Terkena Pidana', value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['Crime Risk'].values[0])
+                    finput_cri_ri = "{:.2f} per 100.000 penduduk".format(input_cri_ri)
+                    st.write(finput_cri_ri)
 
                 if st.button('Prediksi Jumlah Investasi Agregat'):
                     #define X & y
@@ -248,7 +255,13 @@ if menu_utama == 'Prediksi':
                     investasli = data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['PriInv'].values[0]
                     pred_selisih = pred_1 - investasli
                 #investasi = 
-
                     st.write('Prediksi investasi berdasar data diatas adalah : ')
+                    st.write("## Rp"f'{pred_1[0]:,}')
+
+                    st.write('Investasi riil berdasar data diatas adalah : ')
+                    st.write("## Rp"f'{investasli:,}')
+
+                    st.write('Selisih Prediksi investasi berdasar data diatas adalah : ')
                     st.write("## Rp"f'{pred_selisih[0]:,}')
 
+                  
