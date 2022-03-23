@@ -49,7 +49,7 @@ inv1 = pd.concat([data_train,prov], axis=1)
 data_train1 = inv1.drop(['Provinsi','Tahun','UMP-1'],axis=1)
 #Disable Warning
 st.set_option('deprecation.showPyplotGlobalUse', False)
-warnings.filterwarnings(‘ignore’)
+warnings.filterwarnings( action='ignore')
 #Set Size
 sns.set(rc={'figure.figsize':(8,8)})
 #Coloring
