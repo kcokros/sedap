@@ -74,7 +74,7 @@ if menu_utama == 'Analisis':
       # CSS to inject contained in a string
         hide_table_row_index = """
                     <style>
-                    #css-1q8dd3e.edgvbvh1 {display:none}
+                    .css-1788y8l.e1tzin5v4 {display:none}
                     </style>
                     """
 
