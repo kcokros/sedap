@@ -70,8 +70,16 @@ menu_utama = st.sidebar.radio('Pilih Menu : ', ('Analisis', 'Prediksi'))
 if menu_utama == 'Analisis':
         st.markdown("""<a style='display: block; text-align: center; font-size:40px; ' href="https://jmp.kemenkeu.go.id/index.php/mapan/article/view/414">Tautan Jurnal</a>""", unsafe_allow_html=True)
         st.markdown("""<a style='display: block; text-align: center; font-size:40px; ' href="https://s.id/DashboardDDAC">Tautan Dashboard Investasi</a>""", unsafe_allow_html=True)
-        with col5:
-            st.write(' ')
+
+      # CSS to inject contained in a string
+        hide_table_row_index = """
+                    <style>
+                    st-ae st-af st-ag st-ah st-ai st-aj st-ak st-bc st-am st-b8 st-ao st-ap st-aq st-ar st-as st-at st-bd st-av st-aw st-ax st-ay st-az st-b9 st-b1 st-b2 st-b3 st-b4 st-b5 st-be {display:none}
+                    </style>
+                    """
+
+        # Inject CSS with Markdown
+        st.markdown(hide_table_row_index, unsafe_allow_html=True)
         
 
 if menu_utama == 'Prediksi':
