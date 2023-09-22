@@ -20,8 +20,6 @@ import warnings
 import tableauserverclient as TSC
 col1, col2, col3 = st.columns(3)
 
-st.session_state['answer'] = ''!
-
 with col1:
     st.write(' ')
 
