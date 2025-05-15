@@ -224,7 +224,7 @@ try:
                 # Fill in the remaining values
                 df_kosong_1['DumMetro'] = input_dum_metro
                 df_kosong_1['Dum Main AP'] = input_dmap
-                df_kosong_1['PortQual'] = input_portqual
+                df_kosong_1['PortQual'] = input_portq
                 df_kosong_1['Infra Index'] = input_infraix
                 df_kosong_1['Dist to Cap'] = input_dist_cp
                 df_kosong_1['Dist to SG'] = input_dist_sg
