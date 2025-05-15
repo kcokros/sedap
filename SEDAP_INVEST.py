@@ -23,9 +23,6 @@ sns.set(rc={'figure.figsize':(8,8)})
 try:
     # Read data
     data_train = pd.read_excel('Rekapitulasi Data (Concise).xlsx')
-    # Rename column to match what the model was trained with
-    data_train.rename(columns={'PortQual': 'PortQ'}, inplace=True)
-
     loaded_model = pickle.load(open('model.pkl', 'rb'))
     
     # Convert data types
@@ -227,7 +224,7 @@ try:
                 # Fill in the remaining values
                 df_kosong_1['DumMetro'] = input_dum_metro
                 df_kosong_1['Dum Main AP'] = input_dmap
-                df_kosong_1['PortQ'] = input_port_q
+                df_kosong_1['PortQual'] = input_port_q
                 df_kosong_1['Infra Index'] = input_infraix
                 df_kosong_1['Dist to Cap'] = input_dist_cp
                 df_kosong_1['Dist to SG'] = input_dist_sg
