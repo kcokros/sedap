@@ -1,3 +1,44 @@
+        # Display debug information about the dataset structure at startup
+        if st.checkbox("Show dataset information (debugging)"):
+            st.write("Dataset shape:", data_train.shape)
+            st.write("Dataset columns:", data_train.columns.tolist())
+            st.write("Sample row from dataset:")
+            st.write(data_train.iloc[0])
+            
+            # Display information about provinces and years
+            st.write("Available provinces:", data_train['Provinsi'].unique())
+            st.write("Available years:", data_train['Tahun'].unique())
+            
+            # Show model input features
+            X = data_train1.drop(['PriInv'], axis=1)
+            st.write("Model input features:", X.columns.tolist())
+            # Add the remaining columns from the prediction DataFrame systematically
+            for col in df_1_pred.columns:
+                col_map = {
+                    'DumMetro': 'DumMetro',
+                    'Dum Main AP': 'Dum Main AP',
+                    'PortQual': 'PortQ',  # Map PortQual to PortQ if needed
+                    'PortQ': 'PortQ',
+                    'Infra Index': 'Infra Index',
+                    'Dist to Cap': 'Dist to Cap',
+                    'Dist to SG': 'Dist to SG',
+                    'DumOil': 'DumOil',
+                    'DumNG': 'DumNG',
+                    'DumCoal': 'DumCoal',
+                    '51G': '51G',
+                    '52G': '52G',
+                    '53G': '53G',
+                    'OtEG': 'OtEG',
+                    'PDRB-1': 'PDRB-1',
+                    'J_Penduduk': 'J_Penduduk',
+                    'K_Penduduk': 'K_Penduduk',
+                    'UHH': 'UHH',
+                    'Crime CP': 'Crime  CP',  # Note space in 'Crime  CP'
+                    'Crime Risk': 'Crime Risk'
+                }
+                
+                if col in col_map and col_map[col] in X_columns:
+                    df_kosong_1[col_map[col]] = df_1_pred[col]
 import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
@@ -86,7 +127,15 @@ try:
             
             input_dmap = st.number_input('Keberadaan Bandara Utama; 0 = tidak punya 1 =punya',key=2,min_value=0, max_value=1,value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['Dum Main AP'].values[0])
             
-            input_port_q = st.number_input('Kualitas Infrastruktur Pelabuhan', key=3, min_value=0.0, max_value=100.0, value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['PortQ'].values[0])
+    # Print column names to help debug
+    st.write("Column names in your dataset:")
+    st.write(data_train.columns.tolist())
+    
+    # Input for port quality (try both possible names)
+    port_quality_col = 'PortQual' if 'PortQual' in data_train.columns else 'PortQ'
+    input_port_q = st.number_input('Kualitas Infrastruktur Pelabuhan', key=3, min_value=0.0, max_value=100.0, 
+                                  value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & 
+                                                    (data_train['Tahun'] == 2020)][port_quality_col].values[0])
             
             input_infraix = st.number_input('Indeks Komposit Infrastruktur; 0=tak memadai, 1=cukup memadai, 2=sangat memadai',key=4,min_value=0, max_value=2,value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['Infra Index'].values[0])
             
@@ -192,54 +241,61 @@ try:
                 'Crime Risk': input_cri_ri
             }, index=index)
             
-            # Set all values to 0
-            df_kosong_1 = X[:1].copy()
-            for col in df_kosong_1.columns:
-                df_kosong_1[col].values[:] = 0
-                
-            list_1 = []
-            for i in df_1_pred.columns:
-                x = df_1_pred[i][0]
-                list_1.append(x)
-                
-            # Create new dataset
-            for i in df_kosong_1.columns:
-                for j in list_1:
-                    if i == j:
-                        df_kosong_1[i] = 1
-                        
-            df_kosong_1['Crime  CP'] = df_1_pred['Crime CP']   
-            df_kosong_1['DumMetro'] = df_1_pred['DumMetro']
-            df_kosong_1['Dum Main AP'] = df_1_pred['Dum Main AP']
-            df_kosong_1['PortQ'] = df_1_pred['PortQual']  # Column name should be 'PortQ' not 'PortQual'
-            df_kosong_1['Infra Index'] = df_1_pred['Infra Index']
-            df_kosong_1['Dist to Cap'] = df_1_pred['Dist to Cap']
-            df_kosong_1['Dist to SG'] = df_1_pred['Dist to SG']
-            df_kosong_1['DumOil'] = df_1_pred['DumOil']
-            df_kosong_1['DumNG'] = df_1_pred['DumNG']
-            df_kosong_1['DumCoal'] = df_1_pred['DumCoal']
-            df_kosong_1['51G'] = df_1_pred['51G']
-            df_kosong_1['52G'] = df_1_pred['52G']
-            df_kosong_1['53G'] = df_1_pred['53G']
-            df_kosong_1['OtEG'] = df_1_pred['OtEG']
-            df_kosong_1['PDRB-1'] = df_1_pred['PDRB-1']
-            df_kosong_1['J_Penduduk'] = df_1_pred['J_Penduduk']
-            df_kosong_1['K_Penduduk'] = df_1_pred['K_Penduduk']
-            df_kosong_1['UHH'] = df_1_pred['UHH']
-            df_kosong_1['Crime Risk'] = df_1_pred['Crime Risk']
+            # Get model's column names 
+            X_columns = X.columns.tolist()
+            st.write("Model feature names:")
+            st.write(X_columns)
             
-            pred_1 = loaded_model.predict(df_kosong_1)
-            investasli = data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['PriInv'].values[0]
-            pred_selisih = pred_1 - investasli
+            # Create prediction data with exactly the same columns as model expects
+            df_kosong_1 = pd.DataFrame(0, index=[0], columns=X_columns)
             
-            st.write('Prediksi investasi berdasar data diatas adalah : ')
-            st.write("## Rp" + f'{pred_1[0]:,}')
+            # Update with actual values
+            for col in X_columns:
+                if col in df_1_pred.columns:
+                    df_kosong_1[col] = df_1_pred[col]
+                elif col == 'PortQ' and 'PortQual' in df_1_pred.columns:
+                    df_kosong_1['PortQ'] = df_1_pred['PortQual']
+                elif col == 'PortQual' and 'PortQ' in df_1_pred.columns:
+                    df_kosong_1['PortQual'] = df_1_pred['PortQ']
+                elif col == 'Crime  CP' and 'Crime CP' in df_1_pred.columns:
+                    df_kosong_1['Crime  CP'] = df_1_pred['Crime CP']
 
-            st.write('Investasi riil berdasar data diatas adalah : ')
-            st.write("## Rp" + f'{investasli:,}')
+            
+            # Debug: show prediction data before prediction
+            st.write("Prediction data (first 5 columns):")
+            st.write(df_kosong_1.iloc[:, :5])
+            
+            # Check if all feature column names match
+            missing_cols = set(X_columns) - set(df_kosong_1.columns)
+            extra_cols = set(df_kosong_1.columns) - set(X_columns)
+            
+            if missing_cols:
+                st.error(f"Missing columns in prediction data: {missing_cols}")
+            if extra_cols:
+                st.warning(f"Extra columns in prediction data (will be ignored): {extra_cols}")
+                
+            # Make predictions only if all required columns are present
+            if not missing_cols:
+                try:
+                    pred_1 = loaded_model.predict(df_kosong_1)
+                    investasli = data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['PriInv'].values[0]
+                    pred_selisih = pred_1 - investasli
+                    
+                    st.write('Prediksi investasi berdasar data diatas adalah : ')
+                    st.write("## Rp" + f'{pred_1[0]:,}')
 
-            st.write('Selisih Prediksi investasi berdasar data diatas adalah : ')
-            st.write("## Rp" + f'{pred_selisih[0]:,}')
+                    st.write('Investasi riil berdasar data diatas adalah : ')
+                    st.write("## Rp" + f'{investasli:,}')
+
+                    st.write('Selisih Prediksi investasi berdasar data diatas adalah : ')
+                    st.write("## Rp" + f'{pred_selisih[0]:,}')
+                except Exception as e:
+                    st.error(f"Prediction error: {e}")
+                    st.write("Model columns:", X_columns)
+                    st.write("Prediction columns:", df_kosong_1.columns.tolist())
+            else:
+                st.error("Cannot make prediction due to missing columns")
+
 
     with col6:
         st.write(' ')
