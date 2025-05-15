@@ -242,6 +242,8 @@ try:
                 df_kosong_1['Crime  CP'] = input_cri_cp
                 df_kosong_1['Crime Risk'] = input_cri_ri
                 
+                df_kosong_1 = df_kosong_1[X.columns.tolist()]
+
                 # Debug: Show what's being sent to the model
                 if st.checkbox("Show prediction data"):
                     st.write("Prediction data:")
