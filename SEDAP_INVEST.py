@@ -86,7 +86,7 @@ try:
             
             input_dmap = st.number_input('Keberadaan Bandara Utama; 0 = tidak punya 1 =punya',key=2,min_value=0, max_value=1,value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['Dum Main AP'].values[0])
             
-            input_port_q = st.number_input('Kualitas Infrastruktur Pelabuhan', key=3, min_value=0.0, max_value=100.0, value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['PortQual'].values[0])
+            input_port_q = st.number_input('Kualitas Infrastruktur Pelabuhan', key=3, min_value=0.0, max_value=100.0, value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['PortQ'].values[0])
             
             input_infraix = st.number_input('Indeks Komposit Infrastruktur; 0=tak memadai, 1=cukup memadai, 2=sangat memadai',key=4,min_value=0, max_value=2,value= data_train[(data_train['Provinsi'] == input_pilih_provinsi) & (data_train['Tahun'] == 2020)]['Infra Index'].values[0])
             
@@ -172,7 +172,7 @@ try:
                 'provinsi': input_pilih_provinsi,
                 'DumMetro': input_dum_metro,
                 'Dum Main AP': input_dmap,
-                'PortQual': input_port_q,
+                'PortQ': input_port_q,  # Column name should be 'PortQ' not 'PortQual'
                 'Infra Index': input_infraix,
                 'Dist to Cap': input_dist_cp,
                 'Dist to SG': input_dist_sg,
@@ -211,7 +211,7 @@ try:
             df_kosong_1['Crime  CP'] = df_1_pred['Crime CP']   
             df_kosong_1['DumMetro'] = df_1_pred['DumMetro']
             df_kosong_1['Dum Main AP'] = df_1_pred['Dum Main AP']
-            df_kosong_1['PortQual'] = df_1_pred['PortQual']
+            df_kosong_1['PortQ'] = df_1_pred['PortQual']  # Column name should be 'PortQ' not 'PortQual'
             df_kosong_1['Infra Index'] = df_1_pred['Infra Index']
             df_kosong_1['Dist to Cap'] = df_1_pred['Dist to Cap']
             df_kosong_1['Dist to SG'] = df_1_pred['Dist to SG']
