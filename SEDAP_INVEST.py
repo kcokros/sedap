@@ -23,6 +23,9 @@ sns.set(rc={'figure.figsize':(8,8)})
 try:
     # Read data
     data_train = pd.read_excel('Rekapitulasi Data (Concise).xlsx')
+    # Rename column to match what the model was trained with
+    data_train.rename(columns={'PortQual': 'PortQ'}, inplace=True)
+
     loaded_model = pickle.load(open('model.pkl', 'rb'))
     
     # Convert data types
@@ -83,7 +86,7 @@ try:
             input_port_q = st.number_input('Kualitas Infrastruktur Pelabuhan', 
                                           key=3, min_value=0.0, max_value=100.0,
                                           value=data_train[(data_train['Provinsi'] == input_pilih_provinsi) & 
-                                                           (data_train['Tahun'] == 2020)]['PortQ'].values[0])
+                                                           (data_train['Tahun'] == 2020)]['PortQual'].values[0])
             
             input_infraix = st.number_input('Indeks Komposit Infrastruktur; 0=tak memadai, 1=cukup memadai, 2=sangat memadai',
                                            key=4, min_value=0, max_value=2,
