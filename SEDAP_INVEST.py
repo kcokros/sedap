@@ -80,7 +80,7 @@ try:
                                         value=data_train[(data_train['Provinsi'] == input_pilih_provinsi) & 
                                                          (data_train['Tahun'] == 2020)]['Dum Main AP'].values[0])
             
-            input_port_q = st.number_input('Kualitas Infrastruktur Pelabuhan', 
+            input_portqual = st.number_input('Kualitas Infrastruktur Pelabuhan', 
                                           key=3, min_value=0.0, max_value=100.0,
                                           value=data_train[(data_train['Provinsi'] == input_pilih_provinsi) & 
                                                            (data_train['Tahun'] == 2020)]['PortQual'].values[0])
@@ -224,7 +224,7 @@ try:
                 # Fill in the remaining values
                 df_kosong_1['DumMetro'] = input_dum_metro
                 df_kosong_1['Dum Main AP'] = input_dmap
-                df_kosong_1['PortQual'] = input_portq
+                df_kosong_1['PortQual'] = input_portqual
                 df_kosong_1['Infra Index'] = input_infraix
                 df_kosong_1['Dist to Cap'] = input_dist_cp
                 df_kosong_1['Dist to SG'] = input_dist_sg
